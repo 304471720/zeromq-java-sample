@@ -1,4 +1,4 @@
 all:
-	cd protobuf && mvn clean install
-	cd pub && mvn clean install
-	cd sub && mvn clean install
+	cd protobuf && mvn clean package
+	cd pub && mvn clean package
+	cd sub && mvn clean package
