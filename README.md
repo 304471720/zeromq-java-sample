@@ -39,7 +39,7 @@ Unfortunately the Maven tests don't finish (correctly).
 	singleMessage(org.zeromq.ZDispatcherTest)  Time elapsed: 1.01 sec  <<< FAILURE!
 	junit.framework.AssertionFailedError: expected:<0> but was:<1>
 
-and even worse `Running org.zeromq.ZFrameTest` never seems to be stuck in and endless loop.
+and even worse `Running org.zeromq.ZFrameTest` seems to be stuck in an endless loop.
 
 So install the Maven artifact skipping the tests
 
