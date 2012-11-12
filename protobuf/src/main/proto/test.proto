@@ -1,0 +1,8 @@
+option java_package = "com.acme.zeromq.io";
+option java_outer_classname = "Protos";
+
+message Test {
+  required string name = 1;
+  required int32 id = 2;
+  optional string email = 3;
+}

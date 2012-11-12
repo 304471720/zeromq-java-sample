@@ -1,0 +1,169 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.acme</groupId>
+	<artifactId>zeromq-pub</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<inceptionYear>2012</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>Apache License 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>oliver.schrenk</id>
+			<name>Oliver Schrenk</name>
+			<email>oliver.schrenk@gmail.com</email>
+			<roles>
+				<role>Lead Developer</role>
+			</roles>
+			<timezone>1</timezone>
+		</developer>
+	</developers>
+
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/oschrenk/zeromq/issues</url>
+	</issueManagement>
+	<scm>
+		<connection>scm:git:http://github.com/oschrenk/zeromq.git</connection>
+		<developerConnection>scm:git:git@github.com:oschrenk/zeromq.git</developerConnection>
+		<url>http://github.com/oschrenk/zeromq</url>
+	</scm>
+
+	<properties>
+		<version.junit>4.10</version.junit>
+		<version.jzmq>1.1.0-SNAPSHOT</version.jzmq>
+
+		<native.os>${os.name}</native.os>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>com.acme.io.pub.Publisher</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12.4</version>
+				<configuration>
+					<excludes>
+						<exclude>**/*IntegrationTest.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<dependencies>
+
+		<!-- INTERNAL -->
+
+		<dependency>
+			<groupId>com.acme</groupId>
+			<artifactId>zeromq-protobuf</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- IO -->
+
+		<dependency>
+			<groupId>org.zeromq</groupId>
+			<artifactId>jzmq</artifactId>
+			<version>${version.jzmq}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.zeromq</groupId>
+			<artifactId>jzmq</artifactId>
+			<version>${version.jzmq}</version>
+			<classifier>native-${os.arch}-${native.os}</classifier>
+		</dependency>
+
+		<!-- TEST -->
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${version.junit}</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>Windows</id>
+			<activation>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
+			<properties>
+				<native.os>Windows</native.os>
+			</properties>
+		</profile>
+	</profiles>
+
+</project>
