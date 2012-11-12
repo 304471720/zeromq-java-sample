@@ -133,13 +133,6 @@
 			<version>${version.jzmq}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.zeromq</groupId>
-			<artifactId>jzmq</artifactId>
-			<version>${version.jzmq}</version>
-			<classifier>native-${os.arch}-${native.os}</classifier>
-		</dependency>
-
 		<!-- TEST -->
 
 		<dependency>
