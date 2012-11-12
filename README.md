@@ -147,7 +147,7 @@ The project dependencies (jar files) should be specified on the application's cl
 
 from [1](http://stackoverflow.com/a/4195049/256853)
 
-#### `Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin` ####	
+#### `Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin` ####
 
 As I couldn't get the tests to finish I did
 
@@ -164,6 +164,57 @@ Make sure `JAVA_HOME` is set. If you have Java 6
 or Java 7
 
 	export JAVA_HOME=`/usr/libexec/java_home -v 1.7`
+
+#### Debugging JNI ####
+
+As I had not success running jzmq I had to resolve to debugging.
+
+I had to install CDT using 
+
+	http://download.eclipse.org/tools/cdt/releases/juno
+
+as the update site.
+
+1. Import jzmq as Maven project
+2. Right click on the project "New -> Other" "C/C++ -> Convert to a C++Project (Adds C/C++ Nature)" (I choose the Linux toolchain)
+
+Following [5](https://community.jboss.org/wiki/DebuggingJNICAndJavaCodeInEclipse)
+
+#### Install zeromq from source ####
+
+The mailing list suggested to install zeromq from source
+
+	brew remove zeromq
+	git clone git://github.com/zeromq/libzmq.git
+	cd libzmq/
+	./autogen.sh
+	./configure
+	make
+	make install
+
+Testing the installation with perf failed at first
+	
+	cd perf
+	java -Djava.library.path=/usr/local/lib -classpath /usr/local/share/java/zmq.jar:../src/zmq.jar:zmq-perf.jar local_lat tcp://127.0.0.1:5555 1 100
+	...
+	Library not loaded: /usr/local/lib/libzmq.1.dylib
+	  Referenced from: /usr/local/lib/libjzmq.0.dylib
+
+So, I executed
+
+	ln -s /usr/local/lib/libzmq.3.dylib /usr/local/lib/libzmq.1.dylib
+
+Then I recompiled jzmq
+
+	cd ../jzmq
+	make clean
+	make
+	make install
+
+Now the tests successfully ran, so installed the artifact
+
+	export JAVA_HOME=`/usr/libexec/java_home -v 1.7`
+	mvn clean install
 
 ### Resources ###
 
