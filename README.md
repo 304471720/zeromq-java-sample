@@ -8,9 +8,25 @@ I have a multi account system, so I have to switch to my administrator account.
 	
 	su admin 
 
-Install [∅mq](http://www.zeromq.org/) (as of this writing `3.2.1-rc2`) using [homebrew](http://mxcl.github.com/homebrew/)
+Install [∅mq](http://www.zeromq.org/) form source (the latest homebrew version `3.2.1-rc2` had some errors that cause jzmq unit tests to fail)
 
-	brew install zeromq --devel
+	cd ~/Projects/external
+	git clone git://github.com/zeromq/libzmq.git
+	cd libzmq
+	./autogen.sh
+	./configure
+	make
+	make install
+
+Exit to the normal user
+
+	exit
+
+## jzmq ##
+
+Switch to admun user
+
+	su admin
 
 Install latest [jzmq](https://github.com/zeromq/jzmq)
 
@@ -26,33 +42,45 @@ Test the installation
 
 	cd perf
 	java -Djava.library.path=/usr/local/lib -classpath /usr/local/share/java/zmq.jar:../src/zmq.jar:zmq-perf.jar local_lat tcp://127.0.0.1:5555 1 100
+
+At the first run this fails
+
+	...
+	Library not loaded: /usr/local/lib/libzmq.1.dylib
+	  Referenced from: /usr/local/lib/libjzmq.0.dylib
+
+And indeed the file does not exist, but `libzmq.3.dylib` does exist, so
+
+	ln -s /usr/local/lib/libzmq.3.dylib /usr/local/lib/libzmq.1.dylib
+
+Rerun the perf test
+	
+	java -Djava.library.path=/usr/local/lib -classpath /usr/local/share/java/zmq.jar:../src/zmq.jar:zmq-perf.jar local_lat tcp://127.0.0.1:5555 1 100
 	java -Djava.library.path=/usr/local/lib -classpath /usr/local/share/java/zmq.jar:../src/zmq.jar:zmq-perf.jar remote_lat tcp://127.0.0.1:5555 1 100
 
-Test
+Proceed to compile the maven artifact
 
 	cd ..
-	mvn clean test
-	...
-
-Unfortunately the Maven tests don't finish (correctly).
-
-	singleMessage(org.zeromq.ZDispatcherTest)  Time elapsed: 1.01 sec  <<< FAILURE!
-	junit.framework.AssertionFailedError: expected:<0> but was:<1>
-
-and even worse `Running org.zeromq.ZFrameTest` seems to be stuck in an endless loop.
-
-So install the Maven artifact skipping the tests
-
 	export JAVA_HOME=`/usr/libexec/java_home -v 1.7`
 	mvn clean install -DskipTests
-
-The native library didn't get installed, so
-
-	mvn install:install-file -Dfile=target/jzmq-1.1.0-SNAPSHOT-native-x86_64-Mac\ OS\ X.jar -DgroupId=org.zeromq -DartifactId=jzmq -Dversion=1.1.0-SNAPSHOT -Dpackaging=jar -Dclassifier=native-x86_64-Mac\ OS\ X
 
 Exit to the normal user
 
 	exit
+
+## Maven and jzmq ##
+
+Although jzmq's official [maven.readme](https://github.com/zeromq/jzmq/blob/master/maven.readme) advices you to add a dependency to the native artifact, I didn't work. In fact it [did only work without](http://lists.zeromq.org/pipermail/zeromq-dev/2012-November/019265.html) the native library. 
+
+So just add
+
+	<dependency>
+		<groupId>org.zeromq</groupId>
+		<artifactId>jzmq</artifactId>
+		<version>${version.jzmq}</version>
+	</dependency>
+
+to your dependencies.
 
 ## Protocol Buffers ##
 
@@ -92,7 +120,7 @@ To include the generated source in Eclipse with m2eclipse. You also have to add
 		</executions>
 	</plugin>
 
-to your `pom.xml`. Unfortunately there is no m2connector for the protocol buffer plugin, so you will have to filter it out and build the source on the command line.
+to your `pom.xml`.
 
 ## Appendix ##
 
@@ -165,20 +193,18 @@ or Java 7
 
 	export JAVA_HOME=`/usr/libexec/java_home -v 1.7`
 
-#### Debugging JNI ####
+#### junit.framework.AssertionFailedError ####
 
-As I had not success running jzmq I had to resolve to debugging.
+Unfortunately the Maven tests for jzmq ddidn't finish (correctly).
 
-I had to install CDT using 
+	singleMessage(org.zeromq.ZDispatcherTest)  Time elapsed: 1.01 sec  <<< FAILURE!
+	junit.framework.AssertionFailedError: expected:<0> but was:<1>
 
-	http://download.eclipse.org/tools/cdt/releases/juno
+and even worse `Running org.zeromq.ZFrameTest` seems to be stuck in an endless loop.
 
-as the update site.
+The mailing list [suggested](http://lists.zeromq.org/pipermail/zeromq-dev/2012-November/019262.html) to remove homebrews latest version (`3.2.1-rc2`) and install libzmq from source.
 
-1. Import jzmq as Maven project
-2. Right click on the project "New -> Other" "C/C++ -> Convert to a C++Project (Adds C/C++ Nature)" (I choose the Linux toolchain)
-
-Following [5](https://community.jboss.org/wiki/DebuggingJNICAndJavaCodeInEclipse)
+This solved the problems with the tests.
 
 #### Install zeromq from source ####
 

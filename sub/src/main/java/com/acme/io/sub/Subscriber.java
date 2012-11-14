@@ -8,7 +8,7 @@ import com.acme.zeromq.io.Protos.Test;
 public class Subscriber {
 
 	public static void main(final String[] args) {
-		characters();
+		protocolBuffers();
 	}
 
 	public static void protocolBuffers() {

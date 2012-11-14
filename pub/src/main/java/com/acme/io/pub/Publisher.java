@@ -8,7 +8,7 @@ import com.acme.zeromq.io.Protos.Test;
 public class Publisher {
 
 	public static void main(final String[] args) throws InterruptedException {
-		characters();
+		protocolBuffers();
 	}
 
 	public static void protocolBuffers() {

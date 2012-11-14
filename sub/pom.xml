@@ -42,8 +42,6 @@
 		<version.junit>4.10</version.junit>
 		<version.jzmq>1.1.0-SNAPSHOT</version.jzmq>
 
-		<native.os>${os.name}</native.os>
-
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
@@ -143,19 +141,5 @@
 		</dependency>
 
 	</dependencies>
-
-	<profiles>
-		<profile>
-			<id>Windows</id>
-			<activation>
-				<os>
-					<family>windows</family>
-				</os>
-			</activation>
-			<properties>
-				<native.os>Windows</native.os>
-			</properties>
-		</profile>
-	</profiles>
 
 </project>
